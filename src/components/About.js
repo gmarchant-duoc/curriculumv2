@@ -1,10 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { obtenerCurriculum } from '../services/curriculumService';
+
 
 function About()
 {
-    const miDescripcion =`Desarrollador apasionado por crear soluciones web innovadoras y eficientes
-                          Con experiencia en JavaScript, React y Node.js.`;
+    const [curriculum, setCurriculum] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+      useEffect(() => {
+        cargarCurriculum();
+      }, []);
+      
+    const cargarCurriculum = async () => {
+        try {
+          setLoading(true);
+          const datos = await obtenerCurriculum();
+          setCurriculum(datos);
+          setError(null);
+        } catch (err) {
+          setError('Error al cargar el currículum');
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      if (loading) return <div className="text-center p-5">Cargando...</div>;
+      if (error) return <div className="alert alert-danger">{error}</div>;
+      if (!curriculum) return null;
+      
     return(
         <section className='mb-5'>
             <div className='card shadow-sm'>
@@ -15,7 +40,7 @@ function About()
                 </div>
                 <div className='card-body'>
                     <p className='card-text lead mb-0'>
-                        {miDescripcion}
+                        {curriculum.descripcion}
                     </p>
                 </div>
             </div>

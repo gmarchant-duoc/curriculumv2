@@ -1,48 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { obtenerCurriculum } from '../services/curriculumService';
 
 function Experience()
 {
-    const misExperiencias=[
-        {
-            //Primer Trabajo (mas reciente)
-            puesto: "Desarrollador Frontend",
-            empresa: "Tech Solutions S.A.",
-            ubicación: "Tongoy",
-            periodo: "Enero 2024 - Presente",
-            responsabilidades:[
-                                "Responsabilidad 1",
-                                "Responsabilidad 2",
-                                "Responsabilidad 3",
-                                "Responsabilidad 4"
-                            ]       
-        },
-        {
-            //Segundo Trabajo 
-            puesto: "Desarrollador JR",
-            empresa: "Duoc UC",
-            ubicación: "Los Vilos",
-            periodo: "Junio 2024 - Diciembre 2023",
-            responsabilidades:[
-                                "Responsabilidad 1",
-                                "Responsabilidad 2",
-                                "Responsabilidad 3",
-                                "Responsabilidad 4"
-                            ]       
-        },
-        {
-            //Tercer Trabajo 
-            puesto: "Practica Desarrollador",
-            empresa: "Duoc UC",
-            ubicación: "Los Vilos",
-            periodo: "Junio 2024 - Diciembre 2023",
-            responsabilidades:[
-                                "Responsabilidad 1",
-                                "Responsabilidad 2",
-                                "Responsabilidad 3",
-                                "Responsabilidad 4"
-                            ]       
-        }
-    ];
+    const [curriculum, setCurriculum] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+   
+         useEffect(() => {
+           cargarCurriculum();
+         }, []);
+         
+       const cargarCurriculum = async () => {
+           try {
+             setLoading(true);
+             const datos = await obtenerCurriculum();
+             setCurriculum(datos);
+             setError(null);
+           } catch (err) {
+             setError('Error al cargar el currículum');
+             console.error(err);
+           } finally {
+             setLoading(false);
+           }
+         };
+       
+         if (loading) return <div className="text-center p-5">Cargando...</div>;
+         if (error) return <div className="alert alert-danger">{error}</div>;
+         if (!curriculum) return null;
 
     return(
         <section className='mb-5'>
@@ -54,32 +39,24 @@ function Experience()
                 </div>
 
                 <div className='card-body'>
-                    {/*Mapeo de las experiencias
-                    reccorre misExperiencias y crear bloque html.
-                    for each
-                    */}
-
                 {
-                    misExperiencias.map((trabajo, index)=>(
-                     <div key={index} className='mb-4'>
-                        <h3 className='h5 fw-bold text-dark md'>{trabajo.puesto}</h3>
-                        <h4 className='h6 text-primary mb-1'>{trabajo.empresa} - {trabajo.ubicación}</h4>
-                        <p className='text-muted mb-2'>{trabajo.periodo} </p>
+                    curriculum.experiencias.map((exp) => (
+                     <div key={exp.id} className='mb-4'>
+                        <h3 className='h5 fw-bold text-dark md'>{exp.puesto}</h3>
+                        <h4 className='h6 text-primary mb-1'>{exp.empresa} - {exp.ubicación}</h4>
+                        <p className='text-muted mb-2'>{exp.periodo} </p>
                         <ul className='list-unstyled'>
-                            {trabajo.responsabilidades.map((responsabilidad, idx)=>(
+                            {exp.responsabilidades.map((responsabilidad, idx)=>(
                                 <li key={idx} className='mb-1'>
                                     {responsabilidad}
                                 </li>
                             ))}
                         </ul>
                         <hr className='my-3' />
-                     </div>   
-                                             
+                     </div>                             
                     )
-                    
                     )
                 }
-
                 </div>
             </div>
         </section>
