@@ -1,4 +1,4 @@
-const API_URL = 'https://curriculumv2-backend.railway.internal/api';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://curriculumv2-backend-production.up.railway.app/api';
 
 // Obtener todo el currículum
 export const obtenerCurriculum = async () => {
